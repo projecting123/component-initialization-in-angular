@@ -8,7 +8,7 @@ When Angular sees the selector for a component which'll be rendered on DOM as-
 
 1. Angular goes to Initialize the component by calling the constructor of respective component class. 
 
-2. Angular checks whether that component is depend upon some service(s) or not. If yes, Angular goes to initialize the service class first before the initialization of the component class, because Angular tries to keep the most updated data in the component view i.e. demo.component.html.
+2. Angular checks whether that component is depend upon some service(s) or not. If yes, Angular goes to initialize the service class first before the initialization of the component class, because Angular tries to keep the most updated data in the component view i.e. demo.component.html for this project.
 
 ------------------------------------------------------
 ### Example:

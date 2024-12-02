@@ -14,14 +14,6 @@ export class DemoService {
     effect(() => console.log('demoService', this.newValue()))
   }
 
-  increase() {
-    this.count.update(prev => prev + 1)
-  }
-
-  updateNewValue(){
-    this.newValue.update(prev => prev + 1)
-  }
-
   ngOnInit(): void {
     console.log('Service-1, ngOnInit')
   }
