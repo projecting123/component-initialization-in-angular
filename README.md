@@ -8,7 +8,7 @@ When Angular sees the selector for a component which'll be rendered on DOM as-
 
 1. Angular goes to Initialize the component by calling the constructor of respective component class. 
 
-2. Angular checks whether that component is depend upon some service(s) or not. If yes, Angular goes to initialize the service class first before the initialization of the component class, because Angular tries to keep the most updated data in the component view i.e. demo.component.html for this project.
+2. Angular checks whether that component is depend upon some service(s) or not. If yes, Angular goes to initialize the service class first before the initialization of the component class, because Angular tries to keep the most updated values in the component view i.e. demo.component.html for this project.
 
 ------------------------------------------------------
 ### Example:
@@ -38,7 +38,7 @@ import { effect, Injectable, linkedSignal, signal } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class DemoService {
+export class DemoService{
   count = signal(1)
   newValue = linkedSignal({
     source: this.count,
@@ -49,14 +49,7 @@ export class DemoService {
     effect(() => console.log('demoService', this.newValue()))
   }
 
-  increase() {
-    this.count.update(prev => prev + 1)
-  }
-
-  updateNewValue(){
-    this.newValue.update(prev => prev + 1)
-  }
-
+  // Lifecycle hooks never execute on service
   ngOnInit(): void {
     console.log('Service-1, ngOnInit')
   }
@@ -93,7 +86,7 @@ And all after these, Lifecycle hooks get executed. See more about the lifecycle 
 This was the simple execution order of Angular component and services
 
 ### Note:
-Angular lifecycle hooks of services never get executed. Lifecycle hooks are only for Angular Components.
+Angular lifecycle hooks of services never get executed. Lifecycle hooks are only for Angular Components. If route guards are used for a route then the respective component for that route will only be rendered on client side, not in the server side.
 
 ### Authors
 
