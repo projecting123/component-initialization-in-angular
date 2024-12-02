@@ -1,59 +1,101 @@
-# Angutest
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.0.
+### This project is created by ```Angular CLI-19.0.0```
+# Angular Component Initialization
 
-## Development server
+When Angular sees the selector for a component which'll be rendered on DOM as-
 
-To start a local development server, run:
+```<app-demo></app-demo> ```
 
-```bash
-ng serve
+1. Angular goes to Initialize the component by calling the constructor of respective component class. 
+
+2. Angular checks whether that component is depend upon some service(s) or not. If yes, Angular goes to initialize the service class first before the initialization of the component class, because Angular tries to keep the most updated data in the component view i.e. demo.component.html.
+
+------------------------------------------------------
+### Example:
+demo.component.ts
+
+```javascript
+    export class DemoComponent implements OnInit{
+      demoService = inject(DemoService)
+      demoService2 = inject(Demo2Service)
+      constructor(){
+        console.log('DemoComponent', this.demoService.newValue())
+        console.log('DemoComponent constructor')
+      }
+
+      ngOnInit(): void {
+        console.log('DemoComponent, ngOnInit')
+      }
+    }
+
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+demo.service.ts
 
-## Code scaffolding
+```javascript
+import { effect, Injectable, linkedSignal, signal } from '@angular/core';
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+@Injectable({
+  providedIn: 'root'
+})
+export class DemoService {
+  count = signal(1)
+  newValue = linkedSignal({
+    source: this.count,
+    computation: () => this.count() * 2,
+    equal: (a, b) => a === b
+  })
+  constructor() {
+    effect(() => console.log('demoService', this.newValue()))
+  }
 
-```bash
-ng generate component component-name
+  increase() {
+    this.count.update(prev => prev + 1)
+  }
+
+  updateNewValue(){
+    this.newValue.update(prev => prev + 1)
+  }
+
+  ngOnInit(): void {
+    console.log('Service-1, ngOnInit')
+  }
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+demo2.service.ts
 
-```bash
-ng generate --help
+```javascript
+import { Injectable, signal } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class Demo2Service {
+  count = signal(0)
+  constructor() { 
+    console.log('demoService2', this.count())
+  }
+}
+
 ```
 
-## Building
+When it sees that the component depends upon 2 service classes i.e. demoService and demoService2.
 
-To build the project run:
+Angular goes to initialize the demoService class first and initialize the service class and also try to execute the code inside constructor, but Angular got that the `console.log()` is present inside the effect function which runs asynchronously, so Angular skips the execution of that line.
 
-```bash
-ng build
-```
+Then Angular come back to his previous stage in the `DemoComponent` and goes to the demoService2 class to instantiate that class on same process as `demoService`. It enters the `console.log()` directly inside the constructor, that is why Angular directly executes that line and print the value of `count` signal in the console.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Then Again Angular come back to his previous stage and executes the first `console.log()` by fetching the `newValue` of demoService and then immediately executes the second `console.log()` of the constructor and then after all these execution the asynchronous `console.log()` i.e. inside the effect function get executed.
 
-## Running unit tests
+And all after these, Lifecycle hooks get executed. See more about the lifecycle hooks, how they executed, order of execution etc.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+This was the simple execution order of Angular component and services
 
-```bash
-ng test
-```
+### Note:
+Angular lifecycle hooks of services never get executed. Lifecycle hooks are only for Angular Components.
 
-## Running end-to-end tests
+### Authors
 
-For end-to-end (e2e) testing, run:
+- [@ankur](https://github.com/projecting123)
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
